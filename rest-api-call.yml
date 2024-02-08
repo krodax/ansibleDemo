@@ -1,0 +1,33 @@
+---
+- name: Call REST API endpoint and verify response
+  hosts: localhost
+  tasks:
+    - name: Make POST request to REST API
+      uri:
+        url: "https://api.restful-api.dev/objects"
+        method: POST
+        headers:
+          Content-Type: "application/json"
+        body: |
+          {
+             "name": "Apple MacBook Pro 16",
+             "data": {
+                "year": 2019,
+                "price": 1849.99,
+                "CPU model": "Intel Core i9",
+                "Hard disk size": "1 TB"
+             }
+          }
+      register: api_response
+
+    - name: Check if API request was successful
+      assert:
+        that: 
+          - api_response.status == 200
+          - api_response.json is defined
+          - api_response.json.success == true
+
+    - name: Read the returned year and check if it is 2019
+      assert:
+        that: 
+          - api_response.json.data.year == 2019
